@@ -72,10 +72,25 @@ Insurance.prototype.calculateQuotation = function (insurance) {
             price = base * 1.35;
             break;
    }
-   console.log(price);
+   
+   //Get the year
+   const year = insurance.year;
+
+   const difference = this.getYearDifference(year);
+
+   // Each year the cost of the insurance is going to be 3% cheaper
+   price = price 
+
+   // Get the years difference
+
+
+}
+// Returns the difference between years
+Insurance.prototype.getYearDifference = function(year) {
+    return new Date().getFullYear() - year;
 }
 
-// Everuthing related to the HTML
+// Everything related to the HTML
 function HTMLUI() {}
 
 // Displays the latest 20 years in the select
