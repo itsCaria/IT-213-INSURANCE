@@ -1,6 +1,5 @@
 //Variable
 const form = document.getElementById('request-quote');
-
 const html = new HTMLUI();
 
 
@@ -12,6 +11,7 @@ function eventListeners() {
     document.addEventListener('DOMContentLoaded', function() {
         // Create the <option> for the years
         
+        const html = new HTMLUI();
         html.displayYears();
     });
     
@@ -32,6 +32,15 @@ function eventListeners() {
             // Make the quotation
             const insurance = new Insurance(make, year, level );
             const price = insurance.calculateQoutation(insurance);
+
+            // Clear the previous quotes
+            const prevResult = document.querySelector('#result div');
+            if(prevResult != null) {
+                prevResult.remove();
+            }
+
+            // Print the result from HTMLUI();
+            html.showResults(price, insurance);
         }  
     });
 }
@@ -76,19 +85,37 @@ Insurance.prototype.calculateQuotation = function (insurance) {
    //Get the year
    const year = insurance.year;
 
+   // Get the years difference
    const difference = this.getYearDifference(year);
 
    // Each year the cost of the insurance is going to be 3% cheaper
-   price = price 
+   price = price -((difference * 3) * price) / 100;
 
-   // Get the years difference
+   // Check the level of protection
+   const level = insurance.level;
 
-
+   price = this.calculateLevel(price, level);
+   
+   return price;
 }
 // Returns the difference between years
 Insurance.prototype.getYearDifference = function(year) {
     return new Date().getFullYear() - year;
 }
+// Adds the value based on the level of protection
+Insurance.prototype.calculateLevel = function(price, level) {
+    /*
+        Basic insurance is going to increase the value by 30%
+        Complete Insurance is going to increase the value by 50%
+    */
+   if(level === 'basic') {
+       price = price * 1.30;
+   }else{
+       price = price * 1.50;
+   }
+   return price;
+}
+
 
 // Everything related to the HTML
 function HTMLUI() {}
@@ -128,5 +155,51 @@ HTMLUI.prototype.displayError = function(message) {
     setTimeout(function () {
         document.querySelector('.error').remove();
     }, 3000);
+}
+
+// Prints the result into the HTML
+HTMLUI.prototype.showResults = function(price, insurance) {
+    // Print the result
+    const result = document.getElementById('result');
+
+    // create a div with the result
+    const div = document.createElement('div');
+
+    // Get make from the object and assign a readable name
+    let make = insurance.make;
+
+    switch(make) {
+        case '1':
+            make = 'American';
+            break;
+        case '2':
+            make = 'Asian';
+            break;
+        case '3':
+            make = 'European';
+            break;
+
+
+    }
+    console.log(make);
+
+    // Insert the result
+    div.innerHTML = `
+        <p class="header">Summary</p>
+        <p>Make: ${make}</p>
+        <p>Year: ${insurance.year}</p>
+        <p>Level: ${insurance.level}</p>
+        <p class="total">Total: $ ${price}</p>
+    `;
+
+    const spinner = document.querySelector('#loading img');
+    spinner.getElementsByClassName.display ='block';
+
+    setTimeout(function() {
+        spinner.style.display = 'none';
+         // Insert this into the HTML
+         result.appendChild(div);
+    }, 3000);
+
 
 }
